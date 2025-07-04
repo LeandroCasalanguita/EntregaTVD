@@ -1,0 +1,157 @@
+openapi: 3.0.0
+info:
+  title: API Club Social y Deportivo Teclas Unidos
+  version: 1.0.0
+  description: |
+    Esta API permite gestionar socios, actividades y recursos del Club Teclas Unidos.
+
+tags:
+  - name: Socios
+    description: Operaciones relacionadas con los socios del club
+  - name: Actividades
+    description: Gestión de actividades del club
+  - name: Recursos
+    description: Administración de recursos del club
+
+paths:
+  /socios:
+    get:
+      tags: [Socios]
+      summary: Listar socios con filtros
+      description: Devuelve un listado de socios registrados. Se pueden aplicar filtros opcionales por apellido y edad.
+      parameters:
+        - name: apellido
+          in: query
+          description: Filtro por apellido del socio
+          required: false
+          schema:
+            type: string
+        - name: edad
+          in: query
+          description: Filtro por edad del socio
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de socios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Socio'
+
+    post:
+      tags: [Socios]
+      summary: Alta de socio
+      description: Registra un nuevo socio en el sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Socio'
+      responses:
+        '201':
+          description: Socio creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Socio'
+        '409':
+          description: Conflicto. El socio ya existe.
+        '400':
+          description: Datos del socio inválidos
+
+  /socios/{dni}:
+    get:
+      tags: [Socios]
+      summary: Consultar socio por DNI
+      description: Consulta los datos de un socio a partir de su DNI (sin puntos).
+      parameters:
+        - name: dni
+          in: path
+          required: true
+          description: DNI del socio (sin puntos)
+          schema:
+            type: string
+            pattern: "^[0-9]{7,8}$"
+      responses:
+        '200':
+          description: Datos del socio encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Socio'
+        '404':
+          description: Socio no encontrado
+
+    delete:
+      tags: [Socios]
+      summary: Baja de socio
+      description: Elimina un socio del sistema de forma permanente.
+      parameters:
+        - name: dni
+          in: path
+          required: true
+          description: DNI del socio a eliminar (sin puntos)
+          schema:
+            type: string
+            pattern: "^[0-9]{7,8}$"
+      responses:
+        '204':
+          description: Socio eliminado exitosamente
+        '404':
+          description: Socio no encontrado
+
+  /actividades:
+    get:
+      tags: [Actividades]
+      summary: Listar actividades
+      description: Funcionalidad aún no implementada.
+      responses:
+        '404':
+          description: Funcionalidad no implementada o recurso no encontrado
+
+  /recursos:
+    get:
+      tags: [Recursos]
+      summary: Listar recursos
+      description: Funcionalidad aún no implementada.
+      responses:
+        '404':
+          description: Funcionalidad no implementada o recurso no encontrado
+
+
+components:
+  schemas:
+    Socio:
+      type: object
+      properties:
+        dni:
+          type: string
+          example: "12345678"
+          pattern: "^[0-9]{7,8}$"
+        apellido:
+          type: string
+          example: "Perez"
+        nombre:
+          type: string
+          example: "Juan"
+        edad:
+          type: integer
+          minimum: 1
+          maximum: 99
+          default: 18
+          example: 30
+        fechaNacimiento:
+          type: string
+          format: date
+          example: "1993-05-12"
+        direccion:
+          type: string
+          example: "Algun lado"
+        telefono:
+          type: string
+          example: "555544444"
